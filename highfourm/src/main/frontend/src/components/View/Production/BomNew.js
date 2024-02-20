@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { Select } from 'antd';
-import { InputBar, BtnBlue, BtnWhite } from '../../Common/Module';
+import { Form, Popconfirm, Select } from 'antd';
+import { InputBar, BtnBlue, BtnWhite, BtnBlack } from '../../Common/Module';
+import BasicTable from '../../Common/Table/BasicTable';
 
 const BomNew = ({  onSubmit, onSubmitSuccess }) => {
   const [timeOptions, setTimeOptions] = useState("");
   const [count, setCount] = useState(0);
-  const [dataTable, setDataTable] = useState([]);
-  const [dataMaterial, setDataMaterial] = useState([]);
+  const [dataProcess, setDataProcess] = useState([]);
+  const [dataRequiredMaterial, setDataRequiredMaterial] = useState([]);
 
   const formRef = useRef(null);
 
@@ -82,6 +83,114 @@ const BomNew = ({  onSubmit, onSubmitSuccess }) => {
     { value: 'hour', label: 'hour' },
   ];
 
+  const handleDeleteProcess = (key) => {
+    setDataProcess((prevState) => prevState.filter((item) => item.key !== key));
+  }
+
+  const handleAddProcess = () => {
+    const newData = {
+      key: count,
+    };
+    setDataProcess(prevState => [ ...prevState, newData ]);
+    setCount(count + 1);
+  };
+
+  const handleDeleteRequiredMaterial = (key) => {
+    setDataRequiredMaterial((prevState) => prevState.filter((item) => item.key !== key));
+  }
+
+  const handleAddRequiredMaterial = () => {
+    const newData = {
+      key: count,
+    };
+    setDataRequiredMaterial(prevState => [ ...prevState, newData ]);
+    setCount(count + 1);
+  };
+
+  const defaultColumnsProcess = [
+    {
+      title: '공정 코드',
+      dataIndex: 'processId',
+      editable: true,
+    },
+    {
+      title: '공정 순서',
+      dataIndex: 'sequence',
+      editable: true,
+    },
+    {
+      title: '공정명',
+      dataIndex: 'processName',
+      editable: true,
+    },
+    {
+      title: '시간 단위',
+      dataIndex: 'timeUnit',
+      render: () => (
+        <Form.Item name='timeUnit' style={{ margin: 0 }}>
+          <Select
+            name={'timeUnit'}
+            defaultValue="시간 단위"
+            variant='borderless'
+            onChange={selectTimeOptions}
+            options={timeUnitOptions}
+            allowClear={false}
+            required
+          />
+          <InputBar type='hidden' name={'timeUnit'} value={timeOptions} />
+        </Form.Item>
+        ),
+    },
+    {
+      title: '표준 작업 시간',
+      dataIndex: 'standardWorkTime',
+      editable: true,
+    },
+    {
+      title: '산출물 단위',
+      dataIndex: 'outputUnit',
+      editable: true,
+    },
+    {
+      title: '삭제',
+      dataIndex: 'operation',
+      render: (_, record) =>
+        dataProcess.length >= 1 ? (
+          <Popconfirm title="정말 삭제하시겠습니까?" onConfirm={() => handleDeleteProcess(record.key)}>
+            <a>삭제</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const defaultColumnsRequiredMaterial = [
+    {
+      title: '원자재 코드',
+      dataIndex: 'materialId',
+      editable: true,
+    },
+    {
+      title: '투입 공정',
+      dataIndex: 'inputProcess',
+      editable: true,
+    },
+    {
+      title: '투입량',
+      dataIndex: 'inputAmount',
+      editable: true,
+    },
+    {
+      title: '삭제',
+      dataIndex: 'operation',
+      render: (_, record) =>
+        dataRequiredMaterial.length >= 1 ? (
+          <Popconfirm title="정말 삭제하시겠습니까?" onConfirm={() => handleDeleteRequiredMaterial(record.key)}>
+            <a>삭제</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
   return (
     <>
       <form id='bomNewForm' method='post' ref={formRef}  style={{ borderTop: '1px solid #ccc' }} onSubmit={handleSubmit}>
@@ -103,7 +212,7 @@ const BomNew = ({  onSubmit, onSubmitSuccess }) => {
           <div className='bordered-box-title' style={{ width:'100%', margin:'24px 0 12px',flexWrap: 'wrap' }}>
             <h3 className='bordered-box-title'>공정</h3>
           </div>
-            <div className='modal-div' style={{ marginBottom: '15px' }}>
+            {/* <div className='modal-div' style={{ marginBottom: '15px' }}>
               <label htmlFor='processId' className='label-title'>공정 코드:</label>
               <InputBar inputId={'processId'} name={'processId'} id={'processId'} required/>
             </div>
@@ -117,7 +226,6 @@ const BomNew = ({  onSubmit, onSubmitSuccess }) => {
             </div>
             <div className='modal-div' style={{ marginBottom: '15px' }}>
               <label htmlFor='timeUnit' className='label-title'>시간 단위:</label>
-              {/* <InputBar inputId={'timeUnit'} name={'timeUnit'} id={'timeUnit'} required/> */}
               <Select
                 name={'timeUnit'}
                 defaultValue="시간 단위"
@@ -139,13 +247,23 @@ const BomNew = ({  onSubmit, onSubmitSuccess }) => {
             <div className='modal-div' style={{ marginBottom: '15px' }}>
               <label htmlFor='outputUnit' className='label-title'>산출물 단위:</label>
               <InputBar inputId={'outputUnit'} name={'outputUnit'} id={'outputUnit'} required/>
+            </div> */}
+            <div style={{width:'100%', marginBottom: '15px'}}>
+              <BasicTable
+              dataSource={dataProcess} 
+              defaultColumns={defaultColumnsProcess} 
+              setDataSource={setDataProcess} 
+              pagination={false}/>
+            </div>
+            <div className='add-btn'>
+              <BtnBlack value={"항목 추가"} onClick={handleAddProcess}></BtnBlack>
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <div className='bordered-box-title' style={{ width:'100%', margin:'24px 0 12px',flexWrap: 'wrap' }}>
             <h3 className='bordered-box-title'>소요 자재</h3>
           </div>
-            <div className='modal-div' >
+            {/* <div className='modal-div' >
               <label htmlFor='materialId' className='label-title'>원자재 코드:</label>
               <InputBar inputId={'materialId'} name={'materialId'} id={'materialId'} required/>
             </div>
@@ -156,11 +274,21 @@ const BomNew = ({  onSubmit, onSubmitSuccess }) => {
             <div className='modal-div' style={{ marginBottom: '15px', display: 'flex', alignItems: 'center' }}>
               <label htmlFor='inputAmount' className='label-title'>투입량:</label>
               <InputBar inputId={'inputAmount'} name={'inputAmount'} id={'inputAmount'} required/>
+            </div> */}
+            <div style={{width:'100%', marginBottom: '15px'}}>
+              <BasicTable
+              dataSource={dataRequiredMaterial} 
+              defaultColumns={defaultColumnsRequiredMaterial} 
+              setDataSource={setDataRequiredMaterial} 
+              pagination={false}/>
+            </div>
+            <div className='add-btn'>
+              <BtnBlack value={"항목 추가"} onClick={handleAddRequiredMaterial}></BtnBlack>
             </div>
           </div>
         </div>
-        <div>
-          <BtnBlue value={'저장'} type={'submit'} />
+        <div style={{display:'flex', justifyContent:'flex-end', marginTop:'12px'}}>
+          <BtnBlue value={'저장'} type={'submit'}/>
         </div>
       </form>
     </>

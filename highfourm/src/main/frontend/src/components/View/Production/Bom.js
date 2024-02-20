@@ -15,6 +15,7 @@ function Bom() {
   const { productId } = useParams();
   const [dataProduct, setDataProduct] = useState([]);
   const [dataProcess, setDataProcess] = useState([]);
+  const [dataMaterial, setDataMaterial] = useState([]);
   const [dataRequiredMaterial, setDataRequiredMaterial] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchType, setSearchType] = useState('제품 코드');
@@ -40,8 +41,10 @@ function Bom() {
           res = await axios.get('/api/bom');
         }
         if (res) {
-          const newData = await res.data.map((item, index) => ({ key: index, ...item }));
-          setDataProduct(newData);
+          const newDataProduct = await res.data["product"].map((item, index) => ({ key: index, ...item }));
+          setDataProduct(newDataProduct);
+          // const newDataMaterial = await res.data["material"].map((item, index) => ({ key: index, ...item }));
+          // setDataMaterial(newDataMaterial);
         } 
       } catch (error) {
         console.error('데이터를 가져오는 중 오류 발생:', error);

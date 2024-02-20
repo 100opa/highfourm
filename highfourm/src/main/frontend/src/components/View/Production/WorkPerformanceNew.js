@@ -21,7 +21,6 @@ function WorkPerformanceNew() {
     fetch('/api/work-performance/new')
     .then(response => response.json())
     .then(result => {
-        console.log(result);
         setDataProductionPlan(result);
         const newOptions = result.map(item => ({
           value: item.productionPlanId,
