@@ -190,5 +190,9 @@ public class MaterialService {
         historyRepository.save(materialHistory);
 	        
 	}
+
+	public List<Material> findAll() {
+		return materialRepository.findAll();
+	}
 	
 }

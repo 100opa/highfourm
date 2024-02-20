@@ -38,8 +38,8 @@ public class WorkPerformanceController {
 	
 	@GetMapping("/api/work-performance/new")
 	public ResponseEntity<List<WorkPerformanceResponseDTO>> workPerformanceNew() {
-		List<WorkPerformanceResponseDTO> reponseList = productionPlanService.findProductionPlanDetails();
-		return ResponseEntity.ok(reponseList);
+		List<WorkPerformanceResponseDTO> responseList = productionPlanService.findProductionPlanDetails();
+		return ResponseEntity.ok(responseList);
 	}
 	
 	@PostMapping("/api/work-performance/new")
